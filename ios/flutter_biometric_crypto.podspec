@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_biometric_crypto'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'A Flutter plugin for biometric-protected encryption'
   s.description      = <<-DESC
 A Flutter package for biometric-protected encryption of small secrets using Android Keystore and iOS Keychain/Secure Enclave.

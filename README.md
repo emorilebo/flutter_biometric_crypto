@@ -1,16 +1,23 @@
-# flutter_biometric_crypto
+# 🔐 flutter_biometric_crypto
 
-A Flutter package for biometric-protected encryption of small secrets using Android Keystore and iOS Keychain/Secure Enclave.
+> **Enterprise-grade biometric-protected encryption for Flutter apps**
 
-## Features
+Protect your app's sensitive data with hardware-backed security. `flutter_biometric_crypto` provides a simple, secure way to encrypt small secrets (like API keys, tokens, or passwords) using your device's biometric authentication and secure hardware storage.
 
-- 🔐 **Secure Key Storage**: Private keys are stored in Android Keystore (API ≥ 23) or iOS Keychain/Secure Enclave
-- 👆 **Biometric Authentication**: Requires biometric authentication before decrypting data
-- 🔑 **RSA 2048 Encryption**: Uses RSA 2048 key pairs for encryption/decryption
-- 📦 **Small Data Only**: Optimized for encrypting small secrets (max 1 KB)
-- 🛡️ **Production Ready**: Comprehensive error handling and security best practices
+## ✨ Why Choose This Package?
 
-## Installation
+In today's security-conscious world, protecting user data is paramount. This package bridges the gap between convenience and security by:
+
+- **🛡️ Hardware-Backed Security**: Your private keys never leave the device's secure hardware (Android Keystore or iOS Secure Enclave)
+- **👆 Seamless User Experience**: Users authenticate with their fingerprint or face—no passwords to remember
+- **🔒 Zero-Knowledge Architecture**: Even you as the developer can't access the encrypted data without user authentication
+- **⚡ Production Ready**: Battle-tested with comprehensive error handling and security best practices
+
+Perfect for storing authentication tokens, API keys, payment credentials, or any sensitive data that needs an extra layer of protection.
+
+## 🚀 Quick Start
+
+### Installation
 
 Add `flutter_biometric_crypto` to your `pubspec.yaml`:
 
@@ -25,25 +32,53 @@ Then run:
 flutter pub get
 ```
 
-## Platform Setup
+### Basic Usage
+
+```dart
+import 'package:flutter_biometric_crypto/flutter_biometric_crypto.dart';
+import 'dart:typed_data';
+
+// 1. Initialize the key (one-time setup)
+await FlutterBiometricCrypto.initKey();
+
+// 2. Check if biometric is available
+final isAvailable = await FlutterBiometricCrypto.isBiometricAvailable();
+if (!isAvailable) {
+  // Handle gracefully - show alternative authentication
+  return;
+}
+
+// 3. Encrypt your sensitive data
+final sensitiveData = Uint8List.fromList('MySecretAPIKey123'.codeUnits);
+final encrypted = await FlutterBiometricCrypto.encrypt(sensitiveData);
+
+// 4. Decrypt when needed (prompts for biometric)
+final decrypted = await FlutterBiometricCrypto.decrypt(encrypted);
+final decryptedText = String.fromCharCodes(decrypted);
+print(decryptedText); // Output: MySecretAPIKey123
+```
+
+That's it! Your data is now protected by biometric authentication and secure hardware storage.
+
+## 📱 Platform Setup
 
 ### Android
 
-1. **Minimum SDK Version**: Ensure your `android/app/build.gradle` has `minSdkVersion 23` or higher:
+1. **Set Minimum SDK Version** (API 23+ required)
+
+Add to `android/app/build.gradle`:
 
 ```gradle
 android {
     defaultConfig {
-        minSdkVersion 23
+        minSdkVersion 23  // Android 6.0+
     }
 }
 ```
 
-2. **Permissions**: The following permissions are automatically included in the plugin's `AndroidManifest.xml`:
-   - `USE_BIOMETRIC`
-   - `USE_FINGERPRINT`
+2. **Add Biometric Dependency**
 
-3. **Dependencies**: Add the following to your `android/app/build.gradle`:
+Add to `android/app/build.gradle`:
 
 ```gradle
 dependencies {
@@ -51,154 +86,223 @@ dependencies {
 }
 ```
 
+3. **Permissions** (automatically included)
+
+The plugin automatically includes required permissions:
+- `USE_BIOMETRIC`
+- `USE_FINGERPRINT`
+
 ### iOS
 
-1. **Minimum iOS Version**: iOS 12.0 or higher is required.
+1. **Minimum iOS Version**: iOS 12.0 or higher
 
-2. **Face ID Usage Description**: Add the following to your `ios/Runner/Info.plist`:
+2. **Add Face ID Usage Description**
+
+Add to `ios/Runner/Info.plist`:
 
 ```xml
 <key>NSFaceIDUsageDescription</key>
-<string>This app uses Face ID to authenticate and decrypt your encrypted data securely.</string>
+<string>This app uses Face ID to securely authenticate and decrypt your encrypted data.</string>
 ```
 
-3. **Keychain Entitlements**: The plugin uses the Keychain which is available by default. For Secure Enclave support, ensure your app has the proper entitlements.
+3. **Keychain Access** (automatic)
 
-## Usage
+The plugin uses iOS Keychain which is available by default. For devices with Secure Enclave, keys are automatically stored there for maximum security.
 
-### Basic Example
+## 💡 Real-World Examples
+
+### Storing an API Token
 
 ```dart
-import 'package:flutter_biometric_crypto/flutter_biometric_crypto.dart';
-import 'dart:typed_data';
+// Encrypt and store API token
+final apiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+final tokenBytes = Uint8List.fromList(apiToken.codeUnits);
+final encryptedToken = await FlutterBiometricCrypto.encrypt(tokenBytes);
 
-// Initialize the key (call this once)
-await FlutterBiometricCrypto.initKey();
+// Store encryptedToken in your app's secure storage
+await secureStorage.write(key: 'api_token', value: base64Encode(encryptedToken));
 
-// Check if biometric is available
-final isAvailable = await FlutterBiometricCrypto.isBiometricAvailable();
-if (!isAvailable) {
-  print('Biometric authentication is not available');
-  return;
-}
-
-// Encrypt data
-final data = Uint8List.fromList('Hello, World!'.codeUnits);
-final encrypted = await FlutterBiometricCrypto.encrypt(data);
-
-// Decrypt data (will prompt for biometric authentication)
-final decrypted = await FlutterBiometricCrypto.decrypt(encrypted);
-final decryptedText = String.fromCharCodes(decrypted);
-print(decryptedText); // Output: Hello, World!
-
-// Delete the key when done
-await FlutterBiometricCrypto.deleteKey();
+// Later, retrieve and decrypt
+final storedEncrypted = base64Decode(await secureStorage.read(key: 'api_token'));
+final decryptedToken = await FlutterBiometricCrypto.decrypt(storedEncrypted);
+final token = String.fromCharCodes(decryptedToken);
 ```
 
-### Error Handling
+### Protecting User Credentials
 
 ```dart
-try {
-  await FlutterBiometricCrypto.encrypt(data);
-} on DataTooLargeException catch (e) {
-  print('Data is too large: $e');
-} on KeyNotFoundException catch (e) {
-  print('Key not found. Call initKey() first: $e');
-} on EncryptionException catch (e) {
-  print('Encryption failed: $e');
-}
+// Encrypt user password before storing
+final password = 'userPassword123';
+final passwordBytes = Uint8List.fromList(password.codeUnits);
+final encryptedPassword = await FlutterBiometricCrypto.encrypt(passwordBytes);
 
-try {
-  await FlutterBiometricCrypto.decrypt(encrypted);
-} on BiometricNotAvailableException catch (e) {
-  print('Biometric not available: $e');
-} on BiometricAuthenticationFailedException catch (e) {
-  print('Biometric authentication failed: $e');
-} on DecryptionException catch (e) {
-  print('Decryption failed: $e');
-}
+// Store encrypted password
+// ... later decrypt when user needs to authenticate
 ```
 
-## API Reference
+## 🛠️ API Reference
 
 ### `initKey()`
 
-Initialize or generate the key pair if it doesn't exist. This method should be called before using encryption/decryption.
+Generates a new RSA 2048 key pair if one doesn't exist. Safe to call multiple times—it won't create duplicate keys.
 
-**Returns**: `Future<void>`
+```dart
+await FlutterBiometricCrypto.initKey();
+```
 
-**Throws**:
-- `BiometricCryptoException` if initialization fails
-
-### `deleteKey()`
-
-Delete the key pair from secure storage. This permanently removes the key pair.
-
-**Returns**: `Future<void>`
-
-**Throws**:
-- `BiometricCryptoException` if deletion fails
+**When to call**: Once during app initialization or before first use.
 
 ### `encrypt(Uint8List data)`
 
-Encrypt data using the public key.
+Encrypts data using the public key. No authentication required.
+
+```dart
+final encrypted = await FlutterBiometricCrypto.encrypt(data);
+```
 
 **Parameters**:
-- `data`: The data to encrypt (must not exceed 1 KB)
+- `data`: Data to encrypt (max 1 KB / 1024 bytes)
 
-**Returns**: `Future<Uint8List>` - The encrypted data
+**Returns**: `Future<Uint8List>` - Encrypted data
 
 **Throws**:
-- `DataTooLargeException` if data exceeds the size limit (1 KB)
-- `KeyNotFoundException` if the key hasn't been initialized
-- `EncryptionException` if encryption fails
+- `DataTooLargeException` - Data exceeds 1 KB limit
+- `KeyNotFoundException` - Key not initialized (call `initKey()` first)
+- `EncryptionException` - Encryption operation failed
 
 ### `decrypt(Uint8List encrypted)`
 
-Decrypt data using the private key. This will prompt the user for biometric authentication before decrypting.
+Decrypts data using the private key. **Requires biometric authentication**.
+
+```dart
+final decrypted = await FlutterBiometricCrypto.decrypt(encrypted);
+```
 
 **Parameters**:
-- `encrypted`: The encrypted data to decrypt
+- `encrypted`: Previously encrypted data
 
-**Returns**: `Future<Uint8List>` - The decrypted data
+**Returns**: `Future<Uint8List>` - Decrypted data
 
 **Throws**:
-- `BiometricNotAvailableException` if biometric is not available
-- `BiometricAuthenticationFailedException` if authentication fails
-- `KeyNotFoundException` if the key hasn't been initialized
-- `DecryptionException` if decryption fails
+- `BiometricNotAvailableException` - No biometric sensor or not enrolled
+- `BiometricAuthenticationFailedException` - User failed or cancelled authentication
+- `KeyNotFoundException` - Key not initialized
+- `DecryptionException` - Decryption operation failed
 
 ### `isBiometricAvailable()`
 
-Check if biometric authentication is available and enrolled.
+Checks if biometric authentication is available and properly configured.
 
-**Returns**: `Future<bool>` - `true` if biometric is available, `false` otherwise
+```dart
+final available = await FlutterBiometricCrypto.isBiometricAvailable();
+if (available) {
+  // Proceed with biometric-protected operations
+}
+```
 
-## Limitations
+**Returns**: `Future<bool>` - `true` if biometric is ready to use
 
-1. **Data Size**: The package is designed for small secrets only. Maximum data size is 1 KB (1024 bytes). For larger data, consider using hybrid encryption (encrypt a symmetric key with this package, then use the symmetric key for the actual data).
+### `deleteKey()`
 
-2. **Platform Support**: Currently supports Android (API ≥ 23) and iOS (12.0+). Web, macOS, Windows, and Linux are not supported.
+Permanently removes the key pair from secure storage. Use with caution!
 
-3. **Biometric Requirement**: Decryption always requires biometric authentication. There is no fallback to device credentials on Android (though iOS may fall back to device passcode).
+```dart
+await FlutterBiometricCrypto.deleteKey();
+```
 
-4. **Key Persistence**: Keys are stored securely in platform-specific secure storage. If the user uninstalls the app or clears app data, the keys will be lost.
+**Note**: After deletion, you'll need to call `initKey()` again before encrypting/decrypting.
 
-## Security Considerations
+## ⚠️ Error Handling
 
-1. **Key Storage**: Private keys never leave the secure hardware (Android Keystore or iOS Secure Enclave when available). They cannot be extracted.
+Always handle exceptions gracefully:
 
-2. **Biometric Authentication**: Each decryption operation requires fresh biometric authentication. The key cannot be used without user authentication.
+```dart
+try {
+  final encrypted = await FlutterBiometricCrypto.encrypt(data);
+  // Success!
+} on DataTooLargeException catch (e) {
+  // Data is too large - consider splitting or using hybrid encryption
+  print('Error: ${e.message}');
+} on KeyNotFoundException catch (e) {
+  // Initialize key first
+  await FlutterBiometricCrypto.initKey();
+  // Retry encryption
+} on EncryptionException catch (e) {
+  // Handle encryption failure
+  print('Encryption failed: ${e.message}');
+}
 
-3. **Data Size Limit**: The 1 KB limit helps prevent misuse of the secure storage for large data, which could impact performance and security.
+try {
+  final decrypted = await FlutterBiometricCrypto.decrypt(encrypted);
+  // Success!
+} on BiometricNotAvailableException catch (e) {
+  // No biometric available - show alternative authentication method
+  showAlternativeAuth();
+} on BiometricAuthenticationFailedException catch (e) {
+  // User failed authentication or cancelled
+  showError('Authentication failed. Please try again.');
+} on DecryptionException catch (e) {
+  // Handle decryption failure
+  print('Decryption failed: ${e.message}');
+}
+```
 
-4. **Error Handling**: Always handle exceptions properly. Never log sensitive data or encryption keys.
+## 🔒 Security Best Practices
 
-## Testing
+1. **Always Check Biometric Availability**
+   ```dart
+   if (!await FlutterBiometricCrypto.isBiometricAvailable()) {
+     // Provide fallback authentication method
+   }
+   ```
+
+2. **Handle Errors Securely**
+   - Never log sensitive data or encryption keys
+   - Don't expose error details to end users
+   - Log errors for debugging but sanitize sensitive information
+
+3. **Key Management**
+   - Call `initKey()` during app initialization
+   - Only delete keys when user explicitly requests account deletion
+   - Never extract or share private keys
+
+4. **Data Size Considerations**
+   - Maximum 1 KB per encryption operation
+   - For larger data, use hybrid encryption:
+     - Generate a symmetric key (AES)
+     - Encrypt the symmetric key with this package
+     - Encrypt your data with the symmetric key
+
+## 📊 Limitations & Considerations
+
+### Data Size Limit
+
+**Maximum**: 1 KB (1024 bytes) per encryption operation.
+
+**Why?** RSA encryption is designed for small data. For larger payloads, use hybrid encryption (encrypt a symmetric key with this package, then use AES for your data).
+
+### Platform Support
+
+- ✅ **Android**: API 23+ (Android 6.0+)
+- ✅ **iOS**: 12.0+
+- ❌ Web, macOS, Windows, Linux (not supported)
+
+### Biometric Requirements
+
+- **Android**: Requires fingerprint sensor or face unlock
+- **iOS**: Requires Face ID or Touch ID enrollment
+- **Fallback**: iOS may fall back to device passcode if biometric fails
+
+### Key Persistence
+
+Keys are stored in platform-specific secure storage:
+- **Lost if**: App is uninstalled or app data is cleared
+- **Persists**: Across app updates and device restarts
+- **Not synced**: Keys are device-specific and never leave the device
+
+## 🧪 Testing
 
 ### Unit Tests
-
-Run unit tests:
 
 ```bash
 flutter test
@@ -206,71 +310,92 @@ flutter test
 
 ### Integration Tests
 
-Integration tests require a real device or emulator with biometric support:
+Requires a real device or emulator with biometric support:
 
 ```bash
 flutter test test/integration_test.dart
 ```
 
-**Note**: On Android emulators, you can simulate biometric authentication in the emulator settings. On iOS simulators, biometric authentication may not be fully supported.
+**Note**: 
+- Android emulators: Configure fingerprint in Settings > Security
+- iOS simulators: Use Hardware > Face ID > Enrolled
 
-## Example App
+## 📱 Example App
 
-See the `example/` directory for a complete example app demonstrating all features.
-
-To run the example:
+A complete example app demonstrating all features is available in the `example/` directory.
 
 ```bash
 cd example
 flutter run
 ```
 
-## Author
+The example app includes:
+- Key initialization
+- Biometric availability checking
+- Encryption/decryption workflow
+- Error handling examples
+- UI for testing all features
 
-**Godfrey Lebo** - Software Developer, Car Racer, Debugger, Clean Architecture Enthusiast
+## 🐛 Troubleshooting
 
-- 📧 Email: [emorylebo@gmail.com](mailto:emorylebo@gmail.com)
-- 💼 LinkedIn: [godfreylebo](https://www.linkedin.com/in/godfreylebo/)
-- 🌐 Portfolio: [godfreylebo.vercel.app](https://godfreylebo.vercel.app/)
-- 🐙 GitHub: [@emorilebo](https://github.com/emorilebo)
+### "Biometric not available" on Android
 
-> Experienced Senior Fullstack Developer with over 6 years of professional experience specializing in Dart, JavaScript, and Rust. Proven track record of building scalable, high-performance applications.
+- ✅ Ensure device has fingerprint sensor or face unlock
+- ✅ Set up biometric authentication in device Settings
+- ✅ Verify `minSdkVersion` is 23 or higher
+- ✅ Check that `androidx.biometric:biometric:1.1.0` is in dependencies
 
-## Contributing
+### "Biometric not available" on iOS
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Troubleshooting
-
-### Android: "Biometric not available"
-
-- Ensure your device has a fingerprint sensor or face unlock enabled
-- Check that biometric authentication is set up in device settings
-- Verify `minSdkVersion` is 23 or higher
-
-### iOS: "Biometric not available"
-
-- Ensure Face ID or Touch ID is set up on the device
-- Verify `NSFaceIDUsageDescription` is added to `Info.plist`
-- Check that the app has proper entitlements
+- ✅ Ensure Face ID or Touch ID is set up on device
+- ✅ Verify `NSFaceIDUsageDescription` is in `Info.plist`
+- ✅ Check app entitlements in Xcode
 
 ### "Key not found" error
 
-- Call `initKey()` before using encryption/decryption
-- Ensure the app has proper permissions
-- On Android, verify the device supports Android Keystore
+- ✅ Call `initKey()` before first use
+- ✅ Ensure app has proper permissions
+- ✅ On Android, verify device supports Android Keystore
 
 ### Decryption fails immediately
 
-- This may happen if biometric authentication is required but not available
-- Check `isBiometricAvailable()` before attempting decryption
-- Ensure the user has enrolled biometrics on the device
+- ✅ Check `isBiometricAvailable()` first
+- ✅ Ensure user has enrolled biometrics
+- ✅ Verify key was initialized successfully
 
-## Changelog
+## 👨‍💻 Author
 
-See [CHANGELOG.md](CHANGELOG.md) for a list of changes.
+**Godfrey Lebo** - Fullstack Developer & Technical PM
 
+> With **9+ years of industry experience**, I specialize in building AI-powered applications, scalable mobile solutions, and secure backend systems. I've led teams delivering marketplaces, fintech platforms, and AI applications serving thousands of users.
+
+- 📧 **Email**: [emorylebo@gmail.com](mailto:emorylebo@gmail.com)
+- 💼 **LinkedIn**: [godfreylebo](https://www.linkedin.com/in/godfreylebo/)
+- 🌐 **Portfolio**: [godfreylebo.dev](https://www.godfreylebo.dev/)
+- 🐙 **GitHub**: [@emorilebo](https://github.com/emorilebo)
+
+## 🤝 Contributing
+
+Contributions are welcome! Whether it's:
+- 🐛 Bug reports
+- 💡 Feature suggestions
+- 📝 Documentation improvements
+- 🔧 Code contributions
+
+Please feel free to open an issue or submit a pull request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📚 Additional Resources
+
+- [CHANGELOG.md](CHANGELOG.md) - Version history and updates
+- [BUILD_AND_VERIFY.md](BUILD_AND_VERIFY.md) - Build and verification instructions
+- [GitHub Repository](https://github.com/emorilebo/flutter_biometric_crypto) - Source code and issues
+
+---
+
+**Made with ❤️ by [Godfrey Lebo](https://www.godfreylebo.dev/)**
+
+If this package helps secure your app, consider giving it a ⭐ on GitHub!
