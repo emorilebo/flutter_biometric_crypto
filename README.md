@@ -225,6 +225,17 @@ cd example
 flutter run
 ```
 
+## Author
+
+**Godfrey Lebo** - Software Developer, Car Racer, Debugger, Clean Architecture Enthusiast
+
+- 📧 Email: [emorylebo@gmail.com](mailto:emorylebo@gmail.com)
+- 💼 LinkedIn: [godfreylebo](https://www.linkedin.com/in/godfreylebo/)
+- 🌐 Portfolio: [godfreylebo.vercel.app](https://godfreylebo.vercel.app/)
+- 🐙 GitHub: [@emorilebo](https://github.com/emorilebo)
+
+> Experienced Senior Fullstack Developer with over 6 years of professional experience specializing in Dart, JavaScript, and Rust. Proven track record of building scalable, high-performance applications.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

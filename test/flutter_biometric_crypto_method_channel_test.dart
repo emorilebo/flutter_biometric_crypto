@@ -84,7 +84,8 @@ void main() {
       );
     });
 
-    test('decrypt should convert BIOMETRIC_AUTHENTICATION_FAILED exception', () async {
+    test('decrypt should convert BIOMETRIC_AUTHENTICATION_FAILED exception',
+        () async {
       final testEncrypted = Uint8List.fromList([1, 2, 3]);
 
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -131,4 +132,3 @@ void main() {
     });
   });
 }
-

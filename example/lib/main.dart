@@ -209,9 +209,8 @@ class _BiometricCryptoPageState extends State<BiometricCryptoPage> {
                           _isBiometricAvailable
                               ? Icons.check_circle
                               : Icons.cancel,
-                          color: _isBiometricAvailable
-                              ? Colors.green
-                              : Colors.red,
+                          color:
+                              _isBiometricAvailable ? Colors.green : Colors.red,
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -304,4 +303,3 @@ class _BiometricCryptoPageState extends State<BiometricCryptoPage> {
     );
   }
 }
-

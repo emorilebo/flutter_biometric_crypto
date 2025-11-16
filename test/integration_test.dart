@@ -11,6 +11,8 @@ import 'package:flutter_biometric_crypto/flutter_biometric_crypto.dart';
 /// 1. Ensure you have a device/emulator with biometric support
 /// 2. Run: flutter test integration_test.dart
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Integration Tests', () {
     setUp(() async {
       // Clean up any existing keys before each test
@@ -114,4 +116,3 @@ void main() {
     });
   });
 }
-

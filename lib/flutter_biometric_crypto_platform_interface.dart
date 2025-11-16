@@ -39,13 +39,13 @@ abstract class FlutterBiometricCryptoPlatform extends PlatformInterface {
   }
 
   /// Decrypt data using the private key (requires biometric authentication).
-  Future<Uint8List> decrypt(Uint8List encrypted) {
+  Future<Uint8List> decrypt(Uint8List encrypted,) {
     throw UnimplementedError('decrypt() has not been implemented.');
   }
 
   /// Check if biometric authentication is available and enrolled.
   Future<bool> isBiometricAvailable() {
-    throw UnimplementedError('isBiometricAvailable() has not been implemented.');
+    throw UnimplementedError(
+        'isBiometricAvailable() has not been implemented.',);
   }
 }
-

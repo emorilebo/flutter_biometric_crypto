@@ -2,6 +2,7 @@ library flutter_biometric_crypto;
 
 import 'dart:typed_data';
 import 'flutter_biometric_crypto_platform_interface.dart';
+import 'flutter_biometric_crypto_method_channel.dart';
 
 export 'flutter_biometric_crypto_platform_interface.dart';
 export 'flutter_biometric_crypto_method_channel.dart';
@@ -72,4 +73,3 @@ class FlutterBiometricCrypto {
     return FlutterBiometricCryptoPlatform.instance.isBiometricAvailable();
   }
 }
-

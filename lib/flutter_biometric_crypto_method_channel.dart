@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'flutter_biometric_crypto_platform_interface.dart';
 
@@ -112,8 +111,7 @@ class BiometricNotAvailableException extends BiometricCryptoException {
 }
 
 /// Exception thrown when biometric authentication fails.
-class BiometricAuthenticationFailedException
-    extends BiometricCryptoException {
+class BiometricAuthenticationFailedException extends BiometricCryptoException {
   BiometricAuthenticationFailedException(super.message);
 }
 
@@ -136,4 +134,3 @@ class DecryptionException extends BiometricCryptoException {
 class DataTooLargeException extends BiometricCryptoException {
   DataTooLargeException(super.message);
 }
-

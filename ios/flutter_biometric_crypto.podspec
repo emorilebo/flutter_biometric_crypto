@@ -9,9 +9,9 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 A Flutter package for biometric-protected encryption of small secrets using Android Keystore and iOS Keychain/Secure Enclave.
                        DESC
-  s.homepage         = 'https://github.com/yourusername/flutter_biometric_crypto'
+  s.homepage         = 'https://github.com/emorilebo/flutter_biometric_crypto'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Godfrey Lebo' => 'emorylebo@gmail.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
