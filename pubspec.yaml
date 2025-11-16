@@ -1,0 +1,30 @@
+name: flutter_biometric_crypto
+description: A Flutter package for biometric-protected encryption of small secrets using Android Keystore and iOS Keychain/Secure Enclave.
+version: 0.1.0
+homepage: https://github.com/yourusername/flutter_biometric_crypto
+repository: https://github.com/yourusername/flutter_biometric_crypto
+documentation: https://github.com/yourusername/flutter_biometric_crypto
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.example.flutter_biometric_crypto
+        pluginClass: FlutterBiometricCryptoPlugin
+      ios:
+        pluginClass: FlutterBiometricCryptoPlugin
+
