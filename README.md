@@ -38,7 +38,7 @@ Add `flutter_biometric_crypto` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_biometric_crypto: ^0.1.2
+  flutter_biometric_crypto: ^0.1.4
 ```
 
 Then run:
