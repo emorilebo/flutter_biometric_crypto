@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2025-01-21
+
+### Fixed
+- Fixed image rendering on pub.dev by using absolute URLs for documentation assets
+
 ## [0.1.2] - 2025-01-21
 
 ### Added
@@ -11,6 +16,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Updated documentation assets location to `doc/assets`
 - Refined documentation wording for better clarity
+- Moved integration tests to `integration_test` directory to fix CI/CD and publication issues
 
 ## [0.1.1] - 2025-01-20
 

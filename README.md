@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="doc/assets/logo.png" width="200" alt="Flutter Biometric Crypto Logo" />
+  <img src="https://raw.githubusercontent.com/emorilebo/flutter_biometric_crypto/main/doc/assets/logo.png" width="200" alt="Flutter Biometric Crypto Logo" />
 </p>
 
 # flutter_biometric_crypto
@@ -18,7 +18,7 @@ Protect your app's sensitive data with hardware-backed security. `flutter_biomet
 In today's security-conscious world, protecting user data is paramount. This package bridges the gap between convenience and security.
 
 <p align="center">
-  <img src="doc/assets/illustration.jpg" width="100%" alt="How Flutter Biometric Crypto Works" />
+  <img src="https://raw.githubusercontent.com/emorilebo/flutter_biometric_crypto/main/doc/assets/illustration.jpg" width="100%" alt="How Flutter Biometric Crypto Works" />
 </p>
 
 ### Key Features

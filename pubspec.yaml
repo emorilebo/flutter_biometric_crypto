@@ -1,6 +1,6 @@
 name: flutter_biometric_crypto
 description: A Flutter package for biometric-protected encryption of small secrets using Android Keystore and iOS Keychain/Secure Enclave.
-version: 0.1.2
+version: 0.1.3
 homepage: https://github.com/emorilebo/flutter_biometric_crypto
 repository: https://github.com/emorilebo/flutter_biometric_crypto
 documentation: https://github.com/emorilebo/flutter_biometric_crypto
