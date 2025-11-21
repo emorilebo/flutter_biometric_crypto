@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2025-01-21
+
+### Added
+- Added official package logo and illustration to documentation
+- Improved README structure and visual appeal
+
+### Changed
+- Updated documentation assets location to `doc/assets`
+- Refined documentation wording for better clarity
+
 ## [0.1.1] - 2025-01-20
 
 ### Changed

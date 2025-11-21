@@ -1,17 +1,32 @@
-# 🔐 flutter_biometric_crypto
+<p align="center">
+  <img src="doc/assets/logo.png" width="200" alt="Flutter Biometric Crypto Logo" />
+</p>
+
+# flutter_biometric_crypto
 
 > **Enterprise-grade biometric-protected encryption for Flutter apps**
 
+[![pub package](https://img.shields.io/pub/v/flutter_biometric_crypto.svg)](https://pub.dev/packages/flutter_biometric_crypto)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Protect your app's sensitive data with hardware-backed security. `flutter_biometric_crypto` provides a simple, secure way to encrypt small secrets (like API keys, tokens, or passwords) using your device's biometric authentication and secure hardware storage.
+
+---
 
 ## ✨ Why Choose This Package?
 
-In today's security-conscious world, protecting user data is paramount. This package bridges the gap between convenience and security by:
+In today's security-conscious world, protecting user data is paramount. This package bridges the gap between convenience and security.
 
-- **🛡️ Hardware-Backed Security**: Your private keys never leave the device's secure hardware (Android Keystore or iOS Secure Enclave)
-- **👆 Seamless User Experience**: Users authenticate with their fingerprint or face—no passwords to remember
-- **🔒 Zero-Knowledge Architecture**: Even you as the developer can't access the encrypted data without user authentication
-- **⚡ Production Ready**: Battle-tested with comprehensive error handling and security best practices
+<p align="center">
+  <img src="doc/assets/illustration.jpg" width="100%" alt="How Flutter Biometric Crypto Works" />
+</p>
+
+### Key Features
+
+- **🛡️ Hardware-Backed Security**: Your private keys never leave the device's secure hardware (Android Keystore or iOS Secure Enclave).
+- **👆 Seamless User Experience**: Users authenticate with their fingerprint or face—no passwords to remember.
+- **🔒 Zero-Knowledge Architecture**: Even you as the developer can't access the encrypted data without user authentication.
+- **⚡ Production Ready**: Battle-tested with comprehensive error handling and security best practices.
 
 Perfect for storing authentication tokens, API keys, payment credentials, or any sensitive data that needs an extra layer of protection.
 
@@ -23,7 +38,7 @@ Add `flutter_biometric_crypto` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_biometric_crypto: ^0.1.0
+  flutter_biometric_crypto: ^0.1.2
 ```
 
 Then run:
@@ -76,15 +91,9 @@ android {
 }
 ```
 
-2. **Add Biometric Dependency**
+2. **Add Biometric Dependency** (Included automatically, but ensure conflicts don't exist)
 
-Add to `android/app/build.gradle`:
-
-```gradle
-dependencies {
-    implementation "androidx.biometric:biometric:1.1.0"
-}
-```
+The plugin uses `androidx.biometric:biometric:1.1.0`.
 
 3. **Permissions** (automatically included)
 
@@ -313,7 +322,7 @@ flutter test
 Requires a real device or emulator with biometric support:
 
 ```bash
-flutter test test/integration_test.dart
+flutter test integration_test/flutter_biometric_crypto_test.dart
 ```
 
 **Note**: 
@@ -391,7 +400,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📚 Additional Resources
 
 - [CHANGELOG.md](CHANGELOG.md) - Version history and updates
-- [BUILD_AND_VERIFY.md](BUILD_AND_VERIFY.md) - Build and verification instructions
 - [GitHub Repository](https://github.com/emorilebo/flutter_biometric_crypto) - Source code and issues
 
 ---

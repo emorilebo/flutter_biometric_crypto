@@ -12,10 +12,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Biometric Crypto Example',
+      title: 'Flutter Biometric Crypto',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          elevation: 2,
+        ),
+        cardTheme: CardTheme(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
       ),
       home: const BiometricCryptoPage(),
     );
@@ -165,8 +184,7 @@ class _BiometricCryptoPageState extends State<BiometricCryptoPage> {
       await FlutterBiometricCrypto.deleteKey();
       setState(() {
         _status = 'Key deleted successfully';
-        _encryptedDataHex = null;
-        _decryptedData = null;
+        _resetState();
       });
     } catch (e) {
       setState(() {
@@ -175,128 +193,215 @@ class _BiometricCryptoPageState extends State<BiometricCryptoPage> {
     }
   }
 
+  void _resetState() {
+    setState(() {
+      _encryptedDataHex = null;
+      _decryptedData = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Flutter Biometric Crypto'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Check Availability',
+            onPressed: _checkBiometricAvailability,
+          ),
+        ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Status',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _status,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          _isBiometricAvailable
-                              ? Icons.check_circle
-                              : Icons.cancel,
-                          color:
-                              _isBiometricAvailable ? Colors.green : Colors.red,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _isBiometricAvailable
-                              ? 'Biometric Available'
-                              : 'Biometric Not Available',
-                          style: TextStyle(
-                            color: _isBiometricAvailable
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildStatusCard(context),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _initKey,
-              child: const Text('Init Key'),
+            Text(
+              'Key Management',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _encryptData,
-              child: const Text('Encrypt Sample Data'),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _decryptData,
-              child: const Text('Decrypt Data (Biometric Required)'),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _deleteKey,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Delete Key'),
-            ),
-            const SizedBox(height: 16),
-            if (_encryptedDataHex != null) ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Encrypted Data (Hex)',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      SelectableText(
-                        _encryptedDataHex!,
-                        style: const TextStyle(fontFamily: 'monospace'),
-                      ),
-                    ],
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _initKey,
+                    icon: const Icon(Icons.vpn_key),
+                    label: const Text('Init Key'),
                   ),
                 ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _deleteKey,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade50,
+                      foregroundColor: Colors.red,
+                    ),
+                    icon: const Icon(Icons.delete_forever),
+                    label: const Text('Delete Key'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Operations',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: _encryptData,
+              icon: const Icon(Icons.lock),
+              label: const Text('Encrypt Sample Data'),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: _decryptData,
+              icon: const Icon(Icons.fingerprint),
+              label: const Text('Decrypt Data (Biometric Required)'),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: _resetState,
+              icon: const Icon(Icons.restart_alt),
+              label: const Text('Reset UI'),
+            ),
+            const SizedBox(height: 24),
+            if (_encryptedDataHex != null) _buildEncryptedDataCard(context),
+            if (_decryptedData != null) _buildDecryptedDataCard(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Status',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _status,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const Divider(height: 24),
+            Row(
+              children: [
+                Icon(
+                  _isBiometricAvailable ? Icons.check_circle : Icons.cancel,
+                  color: _isBiometricAvailable ? Colors.green : Colors.red,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  _isBiometricAvailable
+                      ? 'Biometric Available'
+                      : 'Biometric Not Available',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: _isBiometricAvailable ? Colors.green : Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEncryptedDataCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Card(
+        color: Colors.grey.shade50,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.lock_outline, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Encrypted Data (Hex)',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
-            ],
-            if (_decryptedData != null) ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Decrypted Data',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      SelectableText(
-                        _decryptedData!,
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    ],
-                  ),
+              SelectableText(
+                _encryptedDataHex!,
+                style: const TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 12,
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDecryptedDataCard(BuildContext context) {
+    return Card(
+      color: Colors.green.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.lock_open, size: 20, color: Colors.green),
+                const SizedBox(width: 8),
+                Text(
+                  'Decrypted Data',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.green.shade900,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            SelectableText(
+              _decryptedData!,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.green.shade900,
+              ),
+            ),
           ],
         ),
       ),

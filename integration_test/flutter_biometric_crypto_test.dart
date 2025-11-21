@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:flutter_biometric_crypto/flutter_biometric_crypto.dart';
 
 /// Integration tests for flutter_biometric_crypto
@@ -9,9 +10,9 @@ import 'package:flutter_biometric_crypto/flutter_biometric_crypto.dart';
 ///
 /// To run these tests:
 /// 1. Ensure you have a device/emulator with biometric support
-/// 2. Run: flutter test integration_test.dart
+/// 2. Run: flutter test integration_test/flutter_biometric_crypto_test.dart
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Integration Tests', () {
     setUp(() async {
@@ -32,19 +33,18 @@ void main() {
       }
     });
 
-    test('initKey should create a key successfully', () async {
-      await expectLater(
-        FlutterBiometricCrypto.initKey(),
-        completes,
-      );
+    testWidgets('initKey should create a key successfully',
+        (WidgetTester tester) async {
+      await FlutterBiometricCrypto.initKey();
     });
 
-    test('isBiometricAvailable should return a boolean', () async {
+    testWidgets('isBiometricAvailable should return a boolean',
+        (WidgetTester tester) async {
       final available = await FlutterBiometricCrypto.isBiometricAvailable();
       expect(available, isA<bool>());
     });
 
-    test('encrypt and decrypt round-trip', () async {
+    testWidgets('encrypt and decrypt round-trip', (WidgetTester tester) async {
       // Initialize key
       await FlutterBiometricCrypto.initKey();
 
@@ -67,12 +67,15 @@ void main() {
       } on BiometricAuthenticationFailedException {
         // This is expected if biometric authentication fails
         // In a real test environment, you would authenticate
+        print('Biometric authentication failed or cancelled (expected in CI)');
       } on BiometricNotAvailableException {
         // Skip test if biometric is not available
+        print('Biometric not available, skipping decryption verification');
       }
     });
 
-    test('encrypt should fail with data too large', () async {
+    testWidgets('encrypt should fail with data too large',
+        (WidgetTester tester) async {
       await FlutterBiometricCrypto.initKey();
 
       final largeData = Uint8List(maxDataSize + 1);
@@ -82,7 +85,8 @@ void main() {
       );
     });
 
-    test('encrypt should fail if key not initialized', () async {
+    testWidgets('encrypt should fail if key not initialized',
+        (WidgetTester tester) async {
       // Ensure key is deleted
       try {
         await FlutterBiometricCrypto.deleteKey();
@@ -97,15 +101,12 @@ void main() {
       );
     });
 
-    test('deleteKey should remove the key', () async {
+    testWidgets('deleteKey should remove the key', (WidgetTester tester) async {
       // Initialize key first
       await FlutterBiometricCrypto.initKey();
 
       // Delete key
-      await expectLater(
-        FlutterBiometricCrypto.deleteKey(),
-        completes,
-      );
+      await FlutterBiometricCrypto.deleteKey();
 
       // Try to encrypt - should fail because key is deleted
       final data = Uint8List.fromList([1, 2, 3]);
