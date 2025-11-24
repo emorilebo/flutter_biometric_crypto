@@ -57,12 +57,20 @@ class FlutterBiometricCrypto {
   ///
   /// This will prompt the user for biometric authentication before decrypting.
   ///
+  /// [promptInfo] allows customizing the biometric prompt strings.
+  ///
   /// Throws [BiometricNotAvailableException] if biometric is not available.
   /// Throws [BiometricAuthenticationFailedException] if authentication fails.
   /// Throws [KeyNotFoundException] if the key hasn't been initialized.
   /// Throws [DecryptionException] if decryption fails.
-  static Future<Uint8List> decrypt(Uint8List encrypted) async {
-    return FlutterBiometricCryptoPlatform.instance.decrypt(encrypted);
+  static Future<Uint8List> decrypt(
+    Uint8List encrypted, {
+    BiometricPromptInfo? promptInfo,
+  }) async {
+    return FlutterBiometricCryptoPlatform.instance.decrypt(
+      encrypted,
+      promptInfo: promptInfo,
+    );
   }
 
   /// Check if biometric authentication is available and enrolled.
@@ -73,3 +81,5 @@ class FlutterBiometricCrypto {
     return FlutterBiometricCryptoPlatform.instance.isBiometricAvailable();
   }
 }
+
+

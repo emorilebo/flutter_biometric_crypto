@@ -179,16 +179,25 @@ final encrypted = await FlutterBiometricCrypto.encrypt(data);
 - `KeyNotFoundException` - Key not initialized (call `initKey()` first)
 - `EncryptionException` - Encryption operation failed
 
-### `decrypt(Uint8List encrypted)`
+### `decrypt(Uint8List encrypted, {BiometricPromptInfo? promptInfo})`
 
 Decrypts data using the private key. **Requires biometric authentication**.
 
 ```dart
-final decrypted = await FlutterBiometricCrypto.decrypt(encrypted);
+final decrypted = await FlutterBiometricCrypto.decrypt(
+  encrypted,
+  promptInfo: const BiometricPromptInfo(
+    title: 'Authenticate',
+    subtitle: 'Please authenticate to decrypt your data',
+    description: 'We need your fingerprint to ensure your data is safe.',
+    negativeButtonText: 'Cancel',
+  ),
+);
 ```
 
 **Parameters**:
 - `encrypted`: Previously encrypted data
+- `promptInfo`: Optional configuration for the biometric prompt strings (Android/iOS)
 
 **Returns**: `Future<Uint8List>` - Decrypted data
 

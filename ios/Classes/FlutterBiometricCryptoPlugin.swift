@@ -48,7 +48,20 @@ public class FlutterBiometricCryptoPlugin: NSObject, FlutterPlugin {
                 ))
                 return
             }
-            decrypt(encrypted: Data(encrypted.data), result: result)
+            
+            let title = args["title"] as? String
+            let subtitle = args["subtitle"] as? String
+            let description = args["description"] as? String
+            // iOS doesn't support negative button text customization in the same way, 
+            // but we can use description/subtitle as the reason string.
+            
+            decrypt(
+                encrypted: Data(encrypted.data), 
+                title: title,
+                subtitle: subtitle,
+                description: description,
+                result: result
+            )
         case "isBiometricAvailable":
             isBiometricAvailable(result: result)
         default:
@@ -159,7 +172,13 @@ public class FlutterBiometricCryptoPlugin: NSObject, FlutterPlugin {
         result(FlutterStandardTypedData(bytes: encrypted))
     }
     
-    private func decrypt(encrypted: Data, result: @escaping FlutterResult) {
+    private func decrypt(
+        encrypted: Data,
+        title: String?,
+        subtitle: String?,
+        description: String?,
+        result: @escaping FlutterResult
+    ) {
         guard let privateKey = getPrivateKey() else {
             result(FlutterError(
                 code: "KEY_NOT_FOUND",
@@ -170,19 +189,24 @@ public class FlutterBiometricCryptoPlugin: NSObject, FlutterPlugin {
         }
         
         // Always authenticate before decrypting when using biometric-protected keys
-        authenticateAndDecrypt(encrypted: encrypted, privateKey: privateKey, result: result)
+        authenticateAndDecrypt(
+            encrypted: encrypted,
+            privateKey: privateKey,
+            reason: description ?? subtitle ?? "Authenticate to decrypt data",
+            result: result
+        )
     }
     
     private func authenticateAndDecrypt(
         encrypted: Data,
         privateKey: SecKey,
+        reason: String,
         result: @escaping FlutterResult
     ) {
         let context = LAContext()
         context.localizedFallbackTitle = ""
         
         var authError: NSError?
-        let reason = "Authenticate to decrypt data"
         
         // Try biometric first, fall back to device passcode if available
         let policy: LAPolicy = .deviceOwnerAuthenticationWithBiometrics

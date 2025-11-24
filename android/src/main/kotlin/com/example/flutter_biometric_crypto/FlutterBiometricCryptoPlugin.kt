@@ -104,7 +104,13 @@ class FlutterBiometricCryptoPlugin : FlutterPlugin, MethodCallHandler, ActivityA
                         result.error("INVALID_ARGUMENT", "Encrypted data is null", null)
                         return
                     }
-                    decrypt(encrypted, result)
+
+                    val title = call.argument<String>("title")
+                    val subtitle = call.argument<String>("subtitle")
+                    val description = call.argument<String>("description")
+                    val negativeButtonText = call.argument<String>("negativeButtonText")
+
+                    decrypt(encrypted, title, subtitle, description, negativeButtonText, result)
                 } catch (e: Exception) {
                     result.error("DECRYPTION_FAILED", e.message, null)
                 }
@@ -186,7 +192,14 @@ class FlutterBiometricCryptoPlugin : FlutterPlugin, MethodCallHandler, ActivityA
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun decrypt(encrypted: ByteArray, result: Result) {
+    private fun decrypt(
+        encrypted: ByteArray,
+        title: String?,
+        subtitle: String?,
+        description: String?,
+        negativeButtonText: String?,
+        result: Result
+    ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             result.error("UNSUPPORTED", "Android API 23+ required", null)
             return
@@ -215,7 +228,14 @@ class FlutterBiometricCryptoPlugin : FlutterPlugin, MethodCallHandler, ActivityA
                 e.message?.contains("Key user not authenticated") == true ||
                 e.message?.contains("android.security.KeyStoreException") == true
             ) {
-                promptBiometricAndDecrypt(encrypted, result)
+                promptBiometricAndDecrypt(
+                    encrypted,
+                    title,
+                    subtitle,
+                    description,
+                    negativeButtonText,
+                    result
+                )
             } else {
                 result.error("DECRYPTION_FAILED", e.message ?: "Decryption failed", null)
             }
@@ -223,7 +243,14 @@ class FlutterBiometricCryptoPlugin : FlutterPlugin, MethodCallHandler, ActivityA
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun promptBiometricAndDecrypt(encrypted: ByteArray, result: Result) {
+    private fun promptBiometricAndDecrypt(
+        encrypted: ByteArray,
+        title: String?,
+        subtitle: String?,
+        description: String?,
+        negativeButtonText: String?,
+        result: Result
+    ) {
         val activity = this.activity
         val executor = this.executor
 
@@ -272,13 +299,16 @@ class FlutterBiometricCryptoPlugin : FlutterPlugin, MethodCallHandler, ActivityA
             }
         )
 
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric Authentication")
-            .setSubtitle("Authenticate to decrypt data")
-            .setNegativeButtonText("Cancel")
-            .build()
+        val promptInfoBuilder = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(title ?: "Biometric Authentication")
+            .setSubtitle(subtitle ?: "Authenticate to decrypt data")
+            .setNegativeButtonText(negativeButtonText ?: "Cancel")
 
-        biometricPrompt.authenticate(promptInfo)
+        if (description != null) {
+            promptInfoBuilder.setDescription(description)
+        }
+
+        biometricPrompt.authenticate(promptInfoBuilder.build())
     }
 
     private fun isBiometricAvailable(): Boolean {

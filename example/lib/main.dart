@@ -54,6 +54,20 @@ class _BiometricCryptoPageState extends State<BiometricCryptoPage> {
   String? _decryptedData;
   bool _isBiometricAvailable = false;
 
+  final _titleController = TextEditingController(text: 'Biometric Authentication');
+  final _subtitleController = TextEditingController(text: 'Authenticate to decrypt data');
+  final _descriptionController = TextEditingController(text: 'Please authenticate to access your sensitive data.');
+  final _negativeButtonController = TextEditingController(text: 'Cancel');
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _subtitleController.dispose();
+    _descriptionController.dispose();
+    _negativeButtonController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -149,7 +163,17 @@ class _BiometricCryptoPageState extends State<BiometricCryptoPage> {
         hexParts.map((hex) => int.parse(hex, radix: 16)).toList(),
       );
 
-      final decrypted = await FlutterBiometricCrypto.decrypt(encrypted);
+      final promptInfo = BiometricPromptInfo(
+        title: _titleController.text,
+        subtitle: _subtitleController.text,
+        description: _descriptionController.text,
+        negativeButtonText: _negativeButtonController.text,
+      );
+
+      final decrypted = await FlutterBiometricCrypto.decrypt(
+        encrypted,
+        promptInfo: promptInfo,
+      );
       final decryptedText = String.fromCharCodes(decrypted);
 
       setState(() {
@@ -259,6 +283,35 @@ class _BiometricCryptoPageState extends State<BiometricCryptoPage> {
                     color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
+            ),
+            const SizedBox(height: 8),
+            ExpansionTile(
+              title: const Text('Customize Prompt'),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _titleController,
+                        decoration: const InputDecoration(labelText: 'Title'),
+                      ),
+                      TextField(
+                        controller: _subtitleController,
+                        decoration: const InputDecoration(labelText: 'Subtitle'),
+                      ),
+                      TextField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(labelText: 'Description'),
+                      ),
+                      TextField(
+                        controller: _negativeButtonController,
+                        decoration: const InputDecoration(labelText: 'Negative Button'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(

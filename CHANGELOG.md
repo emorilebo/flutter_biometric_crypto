@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.5] - 2025-11-24
+
+### Added
+- Added customizable biometric prompt strings (title, subtitle, description, negative button) to `decrypt` method via `BiometricPromptInfo`.
+
 ## [0.1.4] - 2025-01-21
 
 ### Fixed

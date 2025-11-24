@@ -39,7 +39,10 @@ abstract class FlutterBiometricCryptoPlatform extends PlatformInterface {
   }
 
   /// Decrypt data using the private key (requires biometric authentication).
-  Future<Uint8List> decrypt(Uint8List encrypted,) {
+  Future<Uint8List> decrypt(
+    Uint8List encrypted, {
+    BiometricPromptInfo? promptInfo,
+  }) {
     throw UnimplementedError('decrypt() has not been implemented.');
   }
 
@@ -48,4 +51,27 @@ abstract class FlutterBiometricCryptoPlatform extends PlatformInterface {
     throw UnimplementedError(
         'isBiometricAvailable() has not been implemented.',);
   }
+}
+
+/// Configuration for the biometric authentication prompt.
+class BiometricPromptInfo {
+  /// Creates a new [BiometricPromptInfo].
+  const BiometricPromptInfo({
+    this.title,
+    this.subtitle,
+    this.description,
+    this.negativeButtonText,
+  });
+
+  /// The title of the prompt (Android only).
+  final String? title;
+
+  /// The subtitle of the prompt (Android only).
+  final String? subtitle;
+
+  /// The description of the prompt (Android only).
+  final String? description;
+
+  /// The text for the negative button (e.g., "Cancel") (Android only).
+  final String? negativeButtonText;
 }

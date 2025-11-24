@@ -44,11 +44,33 @@ class MethodChannelFlutterBiometricCrypto
   }
 
   @override
-  Future<Uint8List> decrypt(Uint8List encrypted) async {
+  Future<Uint8List> decrypt(
+    Uint8List encrypted, {
+    BiometricPromptInfo? promptInfo,
+  }) async {
     try {
+      final Map<String, dynamic> args = {
+        'encrypted': encrypted,
+      };
+
+      if (promptInfo != null) {
+        if (promptInfo.title != null) {
+          args['title'] = promptInfo.title;
+        }
+        if (promptInfo.subtitle != null) {
+          args['subtitle'] = promptInfo.subtitle;
+        }
+        if (promptInfo.description != null) {
+          args['description'] = promptInfo.description;
+        }
+        if (promptInfo.negativeButtonText != null) {
+          args['negativeButtonText'] = promptInfo.negativeButtonText;
+        }
+      }
+
       final result = await _methodChannel.invokeMethod<Uint8List>(
         'decrypt',
-        {'encrypted': encrypted},
+        args,
       );
       if (result == null) {
         throw BiometricCryptoException('Decryption returned null');
