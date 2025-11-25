@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.6] - 2025-11-25
+
+### Fixed
+- Corrected version number in documentation installation instructions.
+
 ## [0.1.5] - 2025-11-24
 
 ### Added

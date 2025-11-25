@@ -1,4 +1,5 @@
-import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_biometric_crypto/flutter_biometric_crypto.dart';
@@ -67,10 +68,10 @@ void main() {
       } on BiometricAuthenticationFailedException {
         // This is expected if biometric authentication fails
         // In a real test environment, you would authenticate
-        print('Biometric authentication failed or cancelled (expected in CI)');
+        debugPrint('Biometric authentication failed or cancelled (expected in CI)');
       } on BiometricNotAvailableException {
         // Skip test if biometric is not available
-        print('Biometric not available, skipping decryption verification');
+        debugPrint('Biometric not available, skipping decryption verification');
       }
     });
 
